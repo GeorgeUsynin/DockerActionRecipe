@@ -17,6 +17,5 @@ jobs:
         run: |
           echo "::error file=entrypoint.sh,line=3,title=Error in container::The answer was not expected"
           exit 1
-      - name: If failure
-        if: success()
+      - if: success()
         run: echo "Oops! Something went wrong"  
