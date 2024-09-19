@@ -28,6 +28,7 @@ jobs:
       with:
         payload: |
           {
+            "channel": "#george-test",
             "text": "Pull Request #${{ github.event.number }} has failed the CI checks.",
             "blocks": [
               {
