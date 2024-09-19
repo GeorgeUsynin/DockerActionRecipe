@@ -35,3 +35,4 @@ jobs:
         pr_title: ${{ github.event.pull_request.title }}
         repository: ${{ github.repository }}
         failure_reason: "Tests or Build failure"
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}

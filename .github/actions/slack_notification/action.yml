@@ -18,7 +18,10 @@ inputs:
     required: true
   failure_reason:
     description: "Failure reason"
-    required: true        
+    required: true
+  slack_webhook_url:
+    description: "Slack webhook URL"
+    required: true          
 runs:
   using: "composite"
   steps:
@@ -61,5 +64,5 @@ runs:
             ]
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_URL: ${{ inputs.slack_webhook_url }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
