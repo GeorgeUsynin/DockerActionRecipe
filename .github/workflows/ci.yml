@@ -1,5 +1,5 @@
 name: Action CI
-on: [push]
+on: [pull_request]
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -13,7 +13,26 @@ jobs:
       - name: Output the answer
         run: echo "The answer is ${{ steps.my-action.outputs.answer }}"
       - name: Test the container
-        if: ${{ steps.my-action.outputs.answer != 42 }}
+        if: steps.my-action.outputs.answer != 42
         run: |
-          echo "::error file=entrypoint.sh,line=5,title=Error in container::The answer was not expected"
+          echo "::error file=entrypoint.sh,line=3,title=Error in container::The answer was not expected"
           exit 1
+  notify:
+    needs: ci
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+    # Step 1: Checkout the code (outside of composite action)
+    - name: Checkout Code
+      uses: actions/checkout@v4.1.7
+    # Step 2: Send a notification to Slack if build fails
+    - name: Notify Slack of Failure
+      uses: './.github/actions/slack_notification'
+      with: 
+        username: "@George Usynin"
+        pr_number: ${{ github.event.number }}
+        pr_url: ${{ github.event.pull_request.html_url }}
+        pr_title: ${{ github.event.pull_request.title }}
+        repository: ${{ github.repository }}
+        failure_reason: "Tests or Build failure"
+        slack_webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
