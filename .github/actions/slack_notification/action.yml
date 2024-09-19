@@ -30,7 +30,7 @@ runs:
       with:
         payload: |
           {
-            "channel": "@George Usynin",
+            "username": "${{ inputs.username }}",
             "text": "Pull Request #${{ inputs.pr_number }} has failed the CI checks.",
             "blocks": [
               {
