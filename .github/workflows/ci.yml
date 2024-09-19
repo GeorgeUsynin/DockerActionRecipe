@@ -1,5 +1,5 @@
 name: Action CI
-on: [push]
+on: [pull_request]
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -17,3 +17,48 @@ jobs:
         run: |
           echo "::error file=entrypoint.sh,line=3,title=Error in container::The answer was not expected"
           exit 1
+  notify:
+    needs: ci
+    if: failure()
+    runs-on: ubuntu-latest
+    steps:
+    # Send a notification to Slack if build fails
+    - name: Notify Slack of Failure
+      uses: slackapi/slack-github-action@v1.27.0
+      with:
+        payload: |
+          {
+            "text": "Pull Request #${{ github.event.number }} has failed the CI checks.",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":warning: *Pull Request Failure* :warning:"
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*PR URL:*\n<${{ github.event.pull_request.html_url }}|Click here>"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Repository:*\n${{ github.repository }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*PR Title:*\n${{ github.event.pull_request.title }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Failure Reason:*\nTests or Build failure"
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
