@@ -1,0 +1,65 @@
+name: Notify Slack of Failure
+description: "Notifies developer about failure in PR"
+inputs:
+  username:
+    description: "Username"
+    required: true
+  pr_number:
+    description: "Pull request number"
+    required: true
+  pr_url:
+    description: "Pull request URL"
+    required: true
+  pr_title:
+    description: "Pull request title"
+    required: true
+  repository:
+    description: "Repository name"
+    required: true
+  failure_reason:
+    description: "Failure reason"
+    required: true        
+runs:
+  using: "composite"
+  steps:
+    - name: Notify Slack of Failure
+      uses: slackapi/slack-github-action@v1.23.0
+      with:
+        payload: |
+          {
+            "channel": "${{ inputs.username }}",
+            "text": "Pull Request #${{ inputs.pr_number }} has failed the CI checks.",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":warning: *Pull Request Failure* :warning:"
+                }
+              },
+              {
+                "type": "section",
+                "fields": [
+                  {
+                    "type": "mrkdwn",
+                    "text": "*PR URL:*\n<${{ inputs.pr_url }}|Click here>"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Repository:*\n${{ inputs.repository }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*PR Title:*\n${{ inputs.pr_title }}"
+                  },
+                  {
+                    "type": "mrkdwn",
+                    "text": "*Failure Reason:*\n${{ inputs.failure_reason }}"
+                  }
+                ]
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK

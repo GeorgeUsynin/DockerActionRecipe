@@ -24,43 +24,11 @@ jobs:
     steps:
     # Send a notification to Slack if build fails
     - name: Notify Slack of Failure
-      uses: slackapi/slack-github-action@v1.23.0
-      with:
-        payload: |
-          {
-            "channel": "#random",
-            "text": "Pull Request #${{ github.event.number }} has failed the CI checks.",
-            "blocks": [
-              {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": ":warning: *Pull Request Failure* :warning:"
-                }
-              },
-              {
-                "type": "section",
-                "fields": [
-                  {
-                    "type": "mrkdwn",
-                    "text": "*PR URL:*\n<${{ github.event.pull_request.html_url }}|Click here>"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Repository:*\n${{ github.repository }}"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*PR Title:*\n${{ github.event.pull_request.title }}"
-                  },
-                  {
-                    "type": "mrkdwn",
-                    "text": "*Failure Reason:*\nTests or Build failure"
-                  }
-                ]
-              }
-            ]
-          }
-      env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+      uses: './.github/actions/slack_notification'
+      with: 
+        username: "@George Usynin"
+        pr_number: ${{ github.event.number }}
+        pr_url: ${{ github.event.pull_request.html_url }}
+        pr_title: ${{ github.event.pull_request.title }}
+        repository: ${{ github.repository }}
+        failure_reason: "Tests or Build failure"
