@@ -22,7 +22,10 @@ jobs:
     if: failure()
     runs-on: ubuntu-latest
     steps:
-    # Send a notification to Slack if build fails
+    # Step 1: Checkout the code (outside of composite action)
+    - name: Checkout Code
+      uses: actions/checkout@v4.1.7
+    # Step 2: Send a notification to Slack if build fails
     - name: Notify Slack of Failure
       uses: './.github/actions/slack_notification'
       with: 
