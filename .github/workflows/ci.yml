@@ -24,7 +24,7 @@ jobs:
     steps:
     # Send a notification to Slack if build fails
     - name: Notify Slack of Failure
-      uses: slackapi/slack-github-action@v1.27.0
+      uses: slackapi/slack-github-action@v1.23.0
       with:
         payload: |
           {
